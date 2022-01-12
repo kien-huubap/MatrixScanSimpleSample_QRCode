@@ -16,6 +16,8 @@ import ScanditBarcodeCapture
 
 class ScannerViewController: UIViewController {
 
+    @IBOutlet weak var counterLabel: UILabel!
+    
     private var context: DataCaptureContext!
     private var camera: Camera?
     private var barcodeTracking: BarcodeTracking!
@@ -114,6 +116,10 @@ extension ScannerViewController: BarcodeTrackingListener {
                          frameData: FrameData) {
         let barcodes = session.trackedBarcodes.values.compactMap { $0.barcode }
         DispatchQueue.main.async { [weak self] in
+            if let self = self {
+                self.counterLabel.text = "\(barcodes.filter({ $0.data != nil && $0.data!.isEmpty == false }).count)"
+            }
+            
             barcodes.forEach {
                 if let self = self, let data = $0.data, !data.isEmpty {
                     self.results[data] = $0
